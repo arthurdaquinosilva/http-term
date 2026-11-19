@@ -1,6 +1,6 @@
 import httpx
 
-from flare.render import body_kind, format_duration, format_size, pretty_body
+from http_term.render import body_kind, format_duration, format_size, pretty_body
 
 
 def resp(content, ctype=None):
@@ -33,7 +33,7 @@ def test_units():
 def test_block_writer_hangs_output_under_a_marker():
     import io
 
-    from flare.block import BlockWriter
+    from http_term.block import BlockWriter
 
     real = io.StringIO()
     w = BlockWriter(real)

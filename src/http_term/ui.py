@@ -1,4 +1,4 @@
-"""The interactive prompt, in querky's style: a ruled input, a one-line footer and `?` for shortcuts."""
+"""The interactive prompt, in :sql's style: a ruled input, a one-line footer and `?` for shortcuts."""
 
 from __future__ import annotations
 
@@ -35,17 +35,17 @@ from prompt_toolkit.styles import DynamicStyle
 from prompt_toolkit.utils import get_cwidth
 from rich.text import Text
 
-from flare import __version__, render
-from flare.banner import wordmark
-from flare.project import short_path
-from flare.request import ITEM, METHODS, _FLAG_OPTS, _VALUE_OPTS, is_complete
-from flare.session import COMMANDS, Session, describe
-from flare.theme import PALETTES
+from http_term import __version__, render
+from http_term.banner import wordmark
+from http_term.project import short_path
+from http_term.request import ITEM, METHODS, _FLAG_OPTS, _VALUE_OPTS, is_complete
+from http_term.session import COMMANDS, Session, describe
+from http_term.theme import PALETTES
 
 MENU_HEIGHT = 8
 EXIT_WINDOW = 1.5  # seconds a first Ctrl+C on an empty prompt waits for the second
 
-# Same trick as ember: ask for xterm's modifyOtherKeys so Shift+Enter can insert a newline.
+# Same trick as :py: ask for xterm's modifyOtherKeys so Shift+Enter can insert a newline.
 ENABLE_MODIFIED_KEYS = "\x1b[>4;1m"
 DISABLE_MODIFIED_KEYS = "\x1b[>4;0m"
 
@@ -148,7 +148,7 @@ class InputLexer(Lexer):
         return get_line
 
 
-class FlareCompleter(Completer):
+class HttpTermCompleter(Completer):
     def __init__(self, session: Session):
         self.session = session
 
@@ -221,7 +221,7 @@ class Repl:
             name=DEFAULT_BUFFER,
             multiline=True,
             history=history,
-            completer=ThreadedCompleter(FlareCompleter(session)),
+            completer=ThreadedCompleter(HttpTermCompleter(session)),
             complete_while_typing=True,
             auto_suggest=AutoSuggestFromHistory(),
             enable_history_search=Condition(lambda: "\n" not in self.buffer.text),
@@ -465,9 +465,9 @@ class Repl:
             for line in wordmark():
                 c.print(line, overflow="crop", no_wrap=True)
         else:
-            c.print(Text("  ://flare", style="flare.logo"))
+            c.print(Text("  :HTTP", style="http_term.logo"))
         c.print()
-        c.print(Text(f"  v{__version__}", style="flare.faint"))
+        c.print(Text(f"  v{__version__}", style="http_term.faint"))
         c.print()
         n = len(s.store)
         rows = [
@@ -478,9 +478,9 @@ class Repl:
         ]
         width = max(len(k) for k, _ in rows) + 2
         for key, value in rows:
-            c.print(Text.assemble(("  " + key.ljust(width), "flare.fg"), (value, "flare.label")))
+            c.print(Text.assemble(("  " + key.ljust(width), "http_term.fg"), (value, "http_term.label")))
         for warning in self.warnings:
-            c.print(Text.assemble(("  ! ", "flare.warn"), (warning, "flare.muted")))
+            c.print(Text.assemble(("  ! ", "http_term.warn"), (warning, "http_term.muted")))
         c.print()
 
     def read(self) -> str | None:
@@ -519,5 +519,5 @@ class Repl:
                 self.session.run(text)
             except KeyboardInterrupt:
                 self.session.note("cancelled", ok=False)
-        self.session.console.print(Text("  goodbye ✦", style="flare.faint"))
+        self.session.console.print(Text("  goodbye ✦", style="http_term.faint"))
         return 0

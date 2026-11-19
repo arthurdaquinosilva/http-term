@@ -1,12 +1,12 @@
 from prompt_toolkit.completion import CompleteEvent
 from prompt_toolkit.document import Document
 
-from flare.banner import pixel_rows
-from flare.ui import FlareCompleter
+from http_term.banner import pixel_rows
+from http_term.ui import HttpTermCompleter
 
 
 def complete(session, text):
-    return [c.text for c in FlareCompleter(session).get_completions(Document(text), CompleteEvent())]
+    return [c.text for c in HttpTermCompleter(session).get_completions(Document(text), CompleteEvent())]
 
 
 def test_completes_commands_aliases_and_methods(session):
@@ -19,6 +19,6 @@ def test_completes_commands_aliases_and_methods(session):
 
 
 def test_wordmark():
-    rows = pixel_rows("://flare")
+    rows = pixel_rows(":HTTP")
     assert len(rows) == 4
     assert set("".join(rows)) <= set("█▀▄ ")

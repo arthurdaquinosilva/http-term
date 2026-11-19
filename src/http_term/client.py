@@ -7,8 +7,8 @@ from dataclasses import dataclass
 
 import httpx
 
-from flare import __version__
-from flare.request import RequestSpec
+from http_term import __version__
+from http_term.request import RequestSpec
 
 
 class RequestError(Exception):
@@ -27,7 +27,7 @@ def send(spec: RequestSpec, timeout: float = 30.0, transport: httpx.BaseTranspor
     timeout = spec.timeout or timeout
     headers = list(spec.headers)
     if spec.header("User-Agent") is None:
-        headers.insert(0, ("User-Agent", f"flare/{__version__}"))
+        headers.insert(0, ("User-Agent", f"http-term/{__version__}"))
     try:
         with httpx.Client(follow_redirects=spec.follow_redirects, verify=spec.verify, timeout=timeout, transport=transport) as client:
             request = client.build_request(

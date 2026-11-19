@@ -1,6 +1,6 @@
 import pytest
 
-from flare.project import AliasError, AliasStore, Project, expand
+from http_term.project import AliasError, AliasStore, Project, expand
 
 
 def test_aliases_persist_per_project(tmp_path):

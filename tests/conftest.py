@@ -5,9 +5,9 @@ import httpx
 import pytest
 from rich.console import Console
 
-from flare.config import Settings
-from flare.project import Project
-from flare.session import Session
+from http_term.config import Settings
+from http_term.project import Project
+from http_term.session import Session
 
 
 def echo_handler(request: httpx.Request) -> httpx.Response:

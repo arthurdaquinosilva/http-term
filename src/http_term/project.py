@@ -24,7 +24,11 @@ class AliasError(ValueError):
 
 
 def data_home() -> Path:
-    return Path(os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")) / "flare"
+    from http_term.config import migrate
+
+    parent = Path(os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share"))
+    migrate(parent / "flare", parent / "http-term")
+    return parent / "http-term"
 
 
 def short_path(path: str | os.PathLike) -> str:

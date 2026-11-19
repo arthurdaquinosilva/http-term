@@ -16,13 +16,13 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from flare import render
-from flare.block import BlockWriter
-from flare.client import Exchange, RequestError, send
-from flare.config import Settings
-from flare.project import AliasError, AliasStore, Project, expand, placeholders, short_path
-from flare.request import ParseError, parse, split_command
-from flare.theme import PALETTES, get_theme
+from http_term import render
+from http_term.block import BlockWriter
+from http_term.client import Exchange, RequestError, send
+from http_term.config import Settings
+from http_term.project import AliasError, AliasStore, Project, expand, placeholders, short_path
+from http_term.request import ParseError, parse, split_command
+from http_term.theme import PALETTES, get_theme
 
 FRAMES = ("·", "✢", "✳", "✶", "✻", "✽", "✻", "✶", "✳", "✢")
 
@@ -41,7 +41,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "project": ("", "where this project's aliases are kept"),
     "clear": ("", "clear the screen"),
     "help": ("", "commands, request syntax and keys"),
-    "exit": ("", "leave flare"),
+    "exit": ("", "leave :http"),
 }
 
 
@@ -106,8 +106,8 @@ class Session:
             self.console.print(r)
 
     def note(self, message: str, ok: bool = True, detail: str = "") -> None:
-        mark = ("✓ ", "flare.ok") if ok else ("✗ ", "flare.err.bold")
-        self.console.print(Text.assemble(mark, (message, "flare.fg" if ok else "flare.err"), (detail, "flare.muted")))
+        mark = ("✓ ", "http_term.ok") if ok else ("✗ ", "http_term.err.bold")
+        self.console.print(Text.assemble(mark, (message, "http_term.fg" if ok else "http_term.err"), (detail, "http_term.muted")))
 
     def _ansi(self, text: Text) -> str:
         with self.console.capture() as cap:
@@ -201,7 +201,7 @@ class Session:
         try:
             ex = send(parse(command, self.env), self.settings.timeout, self.transport)
         except (ParseError, RequestError) as e:
-            print(f"flare: {e}", file=sys.stderr)
+            print(f":http: {e}", file=sys.stderr)
             return False
         self.last, self.last_command = ex, command
         out = getattr(self.console.file, "buffer", None)
@@ -232,14 +232,14 @@ class Session:
                 if elapsed < 0.15:
                     continue
                 line = Text.assemble(
-                    (FRAMES[i % len(FRAMES)] + " ", "flare.accent"), (f"{spec.method} {host}…", "flare.accent"),
-                    (f" ({render.format_duration(elapsed)} · ctrl+c to cancel)", "flare.faint"),
+                    (FRAMES[i % len(FRAMES)] + " ", "http_term.accent"), (f"{spec.method} {host}…", "http_term.accent"),
+                    (f" ({render.format_duration(elapsed)} · ctrl+c to cancel)", "http_term.faint"),
                 )
                 file.write("\r\x1b[2K" + self._ansi(line))
                 file.flush()
                 i += 1
 
-        thread = threading.Thread(target=spin, name="flare-spinner", daemon=True)
+        thread = threading.Thread(target=spin, name="http-term-spinner", daemon=True)
         thread.start()
         try:
             return send(spec, self.settings.timeout, self.transport)
@@ -266,7 +266,7 @@ class Session:
             saved = self.store.get(name)
             if saved is None:
                 raise AliasError(f"no alias /{name} in this project")
-            self.print(Text.assemble(("/", "flare.label"), (name, "flare.label")))
+            self.print(Text.assemble(("/", "http_term.label"), (name, "http_term.label")))
             self.print(Syntax(saved, "bash", theme=self.theme.syntax_theme, background_color="default", word_wrap=True))
             return True
         if command.startswith("/"):
@@ -302,12 +302,12 @@ class Session:
         for name, command in sorted(self.store.aliases.items()):
             method, url, extras = describe(command)
             table.add_row(
-                Text("/" + name, style="flare.label"),
+                Text("/" + name, style="http_term.label"),
                 Text(method, style=f"bold {self.theme.method_style(method)}"),
-                Text(url, style="flare.fg"),
-                Text(extras, style="flare.faint"),
+                Text(url, style="http_term.fg"),
+                Text(extras, style="http_term.faint"),
             )
-        self.console.print(Text.assemble(("aliases", "flare.accent.bold"), (f"  ·  {self.project.name}", "flare.muted")))
+        self.console.print(Text.assemble(("aliases", "http_term.accent.bold"), (f"  ·  {self.project.name}", "http_term.muted")))
         self.console.print(table)
         return True
 
@@ -384,7 +384,7 @@ class Session:
             ("Root", short_path(self.project.root)),
             ("Aliases", f"{n} · {short_path(self.project.aliases_file)}"),
         ):
-            grid.add_row(Text(key, style="flare.fg"), Text(value, style="flare.label"))
+            grid.add_row(Text(key, style="http_term.fg"), Text(value, style="http_term.label"))
         self.print(grid)
         return True
 
@@ -403,14 +403,14 @@ class Session:
             if not first[0]:
                 self.console.print()
             first[0] = False
-            self.console.print(Text(title, style="flare.accent.bold"))
+            self.console.print(Text(title, style="http_term.accent.bold"))
 
         def rows(items: list[tuple[str, str]]) -> None:
             grid = Table.grid(padding=(0, 2))
             grid.add_column(no_wrap=True)
             grid.add_column()
             for key, desc in items:
-                grid.add_row(Text("  " + key, style="flare.label"), Text(desc, style="flare.muted"))
+                grid.add_row(Text("  " + key, style="http_term.label"), Text(desc, style="http_term.muted"))
             self.print(grid)
 
         section("requests")

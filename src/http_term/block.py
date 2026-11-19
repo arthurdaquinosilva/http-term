@@ -1,4 +1,4 @@
-"""Indents everything printed for one input under a `⎿` marker, as querky and Claude Code do."""
+"""Indents everything printed for one input under a `⎿` marker, as :sql and Claude Code do."""
 
 from __future__ import annotations
 

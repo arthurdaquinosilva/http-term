@@ -11,8 +11,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from flare.client import Exchange
-from flare.theme import Theme
+from http_term.client import Exchange
+from http_term.theme import Theme
 
 # Content-type fragment → pygments lexer.
 _LEXERS = (
@@ -120,20 +120,20 @@ def kind_label(response: httpx.Response) -> str:
 def echo(text: str, theme: Theme, alias_target: str | None = None) -> RenderableType:
     """The input line above a response: `> GET https://…`, or `> /alias  GET https://…`."""
     line = Text()
-    line.append("> ", style="flare.muted")
+    line.append("> ", style="http_term.muted")
     first, _, rest = text.strip().partition(" ")
     if first.startswith("/"):
-        line.append(first, style="flare.label")
+        line.append(first, style="http_term.label")
         if rest:
-            line.append(" " + rest, style="flare.fg")
+            line.append(" " + rest, style="http_term.fg")
     elif first.upper() in ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"):
         line.append(first.upper(), style=f"bold {theme.method_style(first)}")
-        line.append(" " + rest, style="flare.fg")
+        line.append(" " + rest, style="http_term.fg")
     else:
-        line.append(text.strip().replace("\\\n", " ").replace("\n", " "), style="flare.fg")
+        line.append(text.strip().replace("\\\n", " ").replace("\n", " "), style="http_term.fg")
     if alias_target:
-        line.append("  →  ", style="flare.faint")
-        line.append(alias_target, style="flare.muted")
+        line.append("  →  ", style="http_term.faint")
+        line.append(alias_target, style="http_term.muted")
     return line
 
 
@@ -142,7 +142,7 @@ def _header_grid(lines: list[tuple[str, str]]) -> Table:
     grid.add_column(no_wrap=True)
     grid.add_column(overflow="fold")
     for name, value in lines:
-        grid.add_row(Text(name, style="flare.key"), Text(value, style="flare.muted"))
+        grid.add_row(Text(name, style="http_term.key"), Text(value, style="http_term.muted"))
     return grid
 
 
@@ -150,7 +150,7 @@ def request_block(ex: Exchange, theme: Theme) -> list[RenderableType]:
     req = ex.request
     target = req.url.raw_path.decode("ascii", "replace")
     out: list[RenderableType] = [
-        Text.assemble(("→ ", "flare.faint"), (req.method, f"bold {theme.method_style(req.method)}"), (f" {target}", "flare.fg")),
+        Text.assemble(("→ ", "http_term.faint"), (req.method, f"bold {theme.method_style(req.method)}"), (f" {target}", "http_term.fg")),
         _header_grid([(k.title() if k.islower() else k, v) for k, v in req.headers.items()]),
     ]
     if req.content:
@@ -158,7 +158,7 @@ def request_block(ex: Exchange, theme: Theme) -> list[RenderableType]:
             body = req.content.decode()
         except UnicodeDecodeError:
             body = f"<{format_size(len(req.content))} of binary data>"
-        out.append(Text(body, style="flare.muted"))
+        out.append(Text(body, style="http_term.muted"))
     out.append(Text(""))
     return out
 
@@ -171,7 +171,7 @@ def response_blocks(ex: Exchange, theme: Theme, show_headers: bool, max_lines: i
         out += request_block(ex, theme)
     if show_headers or ex.spec.verbose:
         style = f"bold {theme.status_style(resp.status_code)}"
-        out.append(Text.assemble((f"{resp.http_version} ", "flare.faint"), (f"{resp.status_code} {reason(resp)}", style)))
+        out.append(Text.assemble((f"{resp.http_version} ", "http_term.faint"), (f"{resp.status_code} {reason(resp)}", style)))
         out.append(_header_grid(list(resp.headers.items())))
     body = body_renderable(resp, theme, max_lines)
     if body is not None:
@@ -187,9 +187,9 @@ def body_renderable(resp: httpx.Response, theme: Theme, max_lines: int | None) -
         return None
     if kind == "binary":
         return Text.assemble(
-            ("binary body", "flare.muted"), (" · ", "flare.faint"), (format_size(len(resp.content)), "flare.muted"),
-            (" · ", "flare.faint"), (media_type(resp) or "unknown type", "flare.muted"),
-            ("  /write <file> to save it", "flare.faint"),
+            ("binary body", "http_term.muted"), (" · ", "http_term.faint"), (format_size(len(resp.content)), "http_term.muted"),
+            (" · ", "http_term.faint"), (media_type(resp) or "unknown type", "http_term.muted"),
+            ("  /write <file> to save it", "http_term.faint"),
         )
     text, lexer = pretty_body(resp)
     lines = text.split("\n")
@@ -198,12 +198,12 @@ def body_renderable(resp: httpx.Response, theme: Theme, max_lines: int | None) -
         hidden = len(lines) - max_lines
         text = "\n".join(lines[:max_lines])
     if lexer == "text":
-        body: RenderableType = Text(text, style="flare.fg")
+        body: RenderableType = Text(text, style="http_term.fg")
     else:
         body = Syntax(text, lexer, theme=theme.syntax_theme, background_color="default", word_wrap=True)
     if not hidden:
         return body
-    note = Text.assemble((f"… {hidden:,} more lines", "flare.muted"), ("  /body to read all of it", "flare.faint"))
+    note = Text.assemble((f"… {hidden:,} more lines", "http_term.muted"), ("  /body to read all of it", "http_term.faint"))
     return Group(body, note)
 
 
@@ -211,18 +211,18 @@ def footer(ex: Exchange | None, theme: Theme, error: str | None = None) -> Text:
     """The status line under a response: `✓ 200 OK · 12ms · 1.2 KB · json`."""
     parts: list[tuple[str, str]] = []
     if error or ex is None:
-        return Text.assemble(*parts, ("✗ ", "flare.err.bold"), (error or "failed", "flare.err"))
+        return Text.assemble(*parts, ("✗ ", "http_term.err.bold"), (error or "failed", "http_term.err"))
     resp = ex.response
     ok = resp.status_code < 400
     color = theme.status_style(resp.status_code)
     parts += [
         ("✓ " if ok else "✗ ", color),
         (f"{resp.status_code} {reason(resp)}", f"bold {color}"),
-        (" · ", "flare.faint"), (format_duration(ex.elapsed), "flare.muted"),
-        (" · ", "flare.faint"), (format_size(len(resp.content)), "flare.muted"),
-        (" · ", "flare.faint"), (kind_label(resp), "flare.muted"),
+        (" · ", "http_term.faint"), (format_duration(ex.elapsed), "http_term.muted"),
+        (" · ", "http_term.faint"), (format_size(len(resp.content)), "http_term.muted"),
+        (" · ", "http_term.faint"), (kind_label(resp), "http_term.muted"),
     ]
     if resp.history:
         n = len(resp.history)
-        parts += [(" · ", "flare.faint"), (f"{n} redirect{'s' if n != 1 else ''}", "flare.muted")]
+        parts += [(" · ", "http_term.faint"), (f"{n} redirect{'s' if n != 1 else ''}", "http_term.muted")]
     return Text.assemble(*parts)

@@ -1,4 +1,4 @@
-"""Settings, read from ~/.config/flare/config.toml."""
+"""Settings, read from ~/.config/http-term/config.toml."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any
 
-from flare.theme import PALETTES
+from http_term.theme import PALETTES
 
 EDITING_MODES = ("emacs", "vi")
 
@@ -48,7 +48,22 @@ class Settings:
 
 
 def config_file() -> Path:
-    return Path(os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")) / "flare" / "config.toml"
+    parent = Path(os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config"))
+    migrate(parent / "flare", parent / "http-term")
+    return parent / "http-term" / "config.toml"
+
+
+def migrate(old: Path, new: Path) -> None:
+    """:http used to be called flare: copy its settings, aliases and history over once, unless the
+    new folder already holds more than the installer's venv. The old folder is left alone."""
+    if not old.is_dir() or (new.is_dir() and any(p.name != "venv" for p in new.iterdir())):
+        return
+    try:
+        import shutil
+
+        shutil.copytree(old, new, symlinks=True, dirs_exist_ok=True, ignore=shutil.ignore_patterns("venv"))
+    except OSError:
+        pass
 
 
 def load_settings(path: Path | None = None) -> tuple[Settings, list[str]]:
@@ -71,9 +86,9 @@ def load_settings(path: Path | None = None) -> tuple[Settings, list[str]]:
                 warnings.append(f"config: unknown setting {key!r}")
             except ValueError as e:
                 warnings.append(f"config: {e}")
-    if theme := os.environ.get("FLARE_THEME"):
+    if theme := os.environ.get("HTTP_TERM_THEME"):
         try:
             settings.set("theme", theme)
         except ValueError as e:
-            warnings.append(f"FLARE_THEME: {e}")
+            warnings.append(f"HTTP_TERM_THEME: {e}")
     return settings, warnings

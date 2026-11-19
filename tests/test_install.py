@@ -27,20 +27,22 @@ def test_help_and_unknown_option(tmp_path):
 
 
 def test_uninstall_keeps_history_and_foreign_links(tmp_path):
-    data = tmp_path / ".local/share/flare-http"
+    data = tmp_path / ".local/share/http-term"
     (data / "venv/bin").mkdir(parents=True)
-    (data / "venv/bin/flare").touch()
+    (data / "venv/bin/:http").touch()
     (data / "history.sqlite").touch()
     bin_dir = tmp_path / ".local/bin"
     bin_dir.mkdir(parents=True)
-    (bin_dir / "flare").symlink_to(data / "venv/bin/flare")
+    (bin_dir / ":http").symlink_to(data / "venv/bin/:http")
+    (bin_dir / "http-term").symlink_to(data / "venv/bin/http-term")
 
     result = run("--uninstall", home=tmp_path)
     assert result.returncode == 0, result.stderr
-    assert not (data / "venv").exists() and not (bin_dir / "flare").is_symlink()
+    assert not (data / "venv").exists() and not (bin_dir / ":http").is_symlink()
+    assert not (bin_dir / "http-term").is_symlink()
     assert (data / "history.sqlite").exists()
 
-    # A flare installed some other way (pipx, brew…) is not ours to remove.
-    (bin_dir / "flare").symlink_to("/somewhere/else/flare")
+    # A :http installed some other way (pipx, brew…) is not ours to remove.
+    (bin_dir / ":http").symlink_to("/somewhere/else/:http")
     run("--uninstall", home=tmp_path)
-    assert (bin_dir / "flare").is_symlink()
+    assert (bin_dir / ":http").is_symlink()

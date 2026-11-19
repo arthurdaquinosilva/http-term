@@ -6,20 +6,20 @@ import argparse
 import sys
 from pathlib import Path
 
-from flare import __version__
-from flare.theme import PALETTES
+from http_term import __version__
+from http_term.theme import PALETTES
 
-USAGE = """flare [--project DIR] [--theme NAME] [--vi] [request …]
+USAGE = """:http [--project DIR] [--theme NAME] [--vi] [request …]
 
-  flare                                   interactive
-  flare GET api.dev/users                 send one request and exit
-  flare curl -X POST api.dev/users -d …   curl syntax works too
-  flare /get_all_users                    run a saved alias of this project
-  flare /get_all_users | jq .             piped output is the bare body"""
+  :http                                   interactive
+  :http GET api.dev/users                 send one request and exit
+  :http curl -X POST api.dev/users -d …   curl syntax works too
+  :http /get_all_users                    run a saved alias of this project
+  :http /get_all_users | jq .             piped output is the bare body"""
 
 
 def _split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
-    """flare's own options come first; everything from the first other token on is the request."""
+    """:http's own options come first; everything from the first other token on is the request."""
     own: list[str] = []
     i = 0
     while i < len(argv):
@@ -38,18 +38,18 @@ def _split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     own, request = _split_argv(argv)
-    parser = argparse.ArgumentParser(prog="flare", usage=USAGE, description="A calm, beautiful terminal HTTP client.")
+    parser = argparse.ArgumentParser(prog=":http", usage=USAGE, description="A calm, beautiful terminal HTTP client.")
     parser.add_argument("--project", type=Path, help="use this directory's project (default: the git repo you're in)")
     parser.add_argument("--theme", choices=list(PALETTES), help="color theme")
     parser.add_argument("--vi", action="store_true", help="vi key bindings")
-    parser.add_argument("--version", action="version", version=f"flare {__version__}")
+    parser.add_argument("--version", action="version", version=f":http {__version__}")
     opts = parser.parse_args(own)
 
     import shlex
 
-    from flare.config import load_settings
-    from flare.project import AliasError, Project
-    from flare.session import Session
+    from http_term.config import load_settings
+    from http_term.project import AliasError, Project
+    from http_term.session import Session
 
     settings, warnings = load_settings()
     if opts.theme:
@@ -60,12 +60,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         session = Session(settings, project)
     except AliasError as e:
-        print(f"flare: {e}", file=sys.stderr)
+        print(f":http: {e}", file=sys.stderr)
         return 1
 
     if request:
         for w in warnings:
-            print(f"flare: {w}", file=sys.stderr)
+            print(f":http: {w}", file=sys.stderr)
         session.raw = not sys.stdout.isatty()
         return 0 if session.run(shlex.join(request)) else 1
 
@@ -76,6 +76,6 @@ def main(argv: list[str] | None = None) -> int:
             ok &= session.run(line)
         return 0 if ok else 1
 
-    from flare.ui import Repl
+    from http_term.ui import Repl
 
     return Repl(session, warnings).run()

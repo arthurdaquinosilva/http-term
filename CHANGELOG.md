@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- **pitch**, one palette shared by ember, shtick, cinder, flare and lore: cool blue/violet hues on the terminal's own black. Backgrounds stay transparent, completion menus included (the current item is bold instead of shaded). flare's accent is yellow, and the `://flare` wordmark follows it. The `void`, `nebula` and `matrix` themes are gone; a config that still names one falls back to pitch with a warning.
+- **Renamed: flare is now `:http`** (repository and package `http-term`). The command is `:http`, with `http-term` as a plain alias for scripts and Makefiles. Settings, per-project aliases and history move from `~/.config/flare` and `~/.local/share/flare` to `http-term` folders automatically on first start (the old folders are kept), and the installer removes the old flare installation. Environment variables are now `HTTP_TERM_*` instead of `FLARE_*`, the User-Agent is `http-term/<version>`, and the start screen reads `:HTTP`.
+- **pitch**, one palette shared by `:py`, `:sh`, `:js`, `:http` and `:docs`: cool blue/violet hues on the terminal's own black. Backgrounds stay transparent, completion menus included (the current item is bold instead of shaded). `:http`'s accent is yellow, and the `://`:http`` wordmark follows it. The `void`, `nebula` and `matrix` themes are gone; a config that still names one falls back to pitch with a warning.
 
 ## 0.2.0
 

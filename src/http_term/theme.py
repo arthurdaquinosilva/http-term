@@ -60,7 +60,7 @@ class Palette:
 
 PALETTES: dict[str, Palette] = {
     # pitch: cool blue/violet hues on a pitch-black terminal, shared by all the tools;
-    # each one gets its own accent (flare's is yellow).
+    # each one gets its own accent (:http's is yellow).
     "pitch": Palette(
         name="pitch",
         fg="#c0caf5",
@@ -126,7 +126,7 @@ class Theme:
     def pygments_style(self) -> type[PygmentsStyle]:
         p = self.p
         return type(
-            f"Flare{p.name.title()}Style",
+            f"HttpTerm{p.name.title()}Style",
             (PygmentsStyle,),
             {
                 "background_color": None,
@@ -203,7 +203,7 @@ class Theme:
                 "input.sep": p.faint,
                 "auto-suggestion": p.faint,
                 "selected": f"bg:{p.selection}",
-                # Completions are a plain list under the prompt, like querky's: no box, accent on the current one.
+                # Completions are a plain list under the prompt, like :sql's: no box, accent on the current one.
                 "completion-menu": p.fg,
                 "completion-menu.completion": p.fg,
                 "completion-menu.completion.current": f"bold {p.accent}",
@@ -226,24 +226,24 @@ class Theme:
         p = self.p
         return RichTheme(
             {
-                "flare.fg": p.fg,
-                "flare.muted": p.muted,
-                "flare.faint": p.faint,
-                "flare.border": p.border,
-                "flare.accent": p.accent,
-                "flare.accent2": p.accent2,
-                "flare.ok": p.ok,
-                "flare.err": p.err,
-                "flare.warn": p.warn,
-                "flare.info": p.info,
-                "flare.label": f"bold {p.label}",
-                "flare.key": p.klass,
-                "flare.var": p.accent2,
-                "flare.accent.bold": f"bold {p.accent}",
-                "flare.logo": f"bold {p.logo}",
-                "flare.err.bold": f"bold {p.err}",
-                "flare.fg.bold": f"bold {p.fg}",
-                "flare.url": p.fg,
+                "http_term.fg": p.fg,
+                "http_term.muted": p.muted,
+                "http_term.faint": p.faint,
+                "http_term.border": p.border,
+                "http_term.accent": p.accent,
+                "http_term.accent2": p.accent2,
+                "http_term.ok": p.ok,
+                "http_term.err": p.err,
+                "http_term.warn": p.warn,
+                "http_term.info": p.info,
+                "http_term.label": f"bold {p.label}",
+                "http_term.key": p.klass,
+                "http_term.var": p.accent2,
+                "http_term.accent.bold": f"bold {p.accent}",
+                "http_term.logo": f"bold {p.logo}",
+                "http_term.err.bold": f"bold {p.err}",
+                "http_term.fg.bold": f"bold {p.fg}",
+                "http_term.url": p.fg,
                 "repr.number": p.number,
                 "repr.str": p.string,
                 "repr.url": f"underline {p.info}",

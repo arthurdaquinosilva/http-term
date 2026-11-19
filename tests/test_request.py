@@ -1,6 +1,6 @@
 import pytest
 
-from flare.request import ParseError, is_complete, parse
+from http_term.request import ParseError, is_complete, parse
 
 
 def test_curl_command():

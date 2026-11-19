@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from flare.request import ParseError, parse
+from http_term.request import ParseError, parse
 
 
 def test_fields_become_a_json_body():

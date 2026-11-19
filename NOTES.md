@@ -1,4 +1,4 @@
-# flare — notes for later
+# :http — notes for later
 
 Snapshot from 2026-11-18 (v0.2.0 plus unreleased changes, classifier "Alpha"). This is a working list toward a "production grade" 1.0, most important first.
 
@@ -8,7 +8,7 @@ Snapshot from 2026-11-18 (v0.2.0 plus unreleased changes, classifier "Alpha"). T
 - No broad `except` handlers.
 - **Docs are thin:** only `docs/releasing.md` and a screenshot. There's no features or configuration guide like the other tools have.
 - `Dockerfile` only runs the tests (`pip install -e .[dev] && pytest`). It isn't a distribution image. Rename it or document what it's for.
-- Uncommitted: `src/flare/theme.py` (pitch palette tweak). Commit it and add it to CHANGELOG "Unreleased" (CHANGELOG also has two `## Unreleased` headings to merge).
+- Uncommitted: `src/http_term/theme.py` (pitch palette tweak). Commit it and add it to CHANGELOG "Unreleased" (CHANGELOG also has two `## Unreleased` headings to merge).
 
 ## 1. Docs (biggest gap)
 
@@ -33,7 +33,7 @@ Snapshot from 2026-11-18 (v0.2.0 plus unreleased changes, classifier "Alpha"). T
 
 ## 4. Diagnosability
 
-- [ ] Add `--debug` (log the raw request and response with secrets redacted), a crash report and `flare --doctor`.
+- [ ] Add `--debug` (log the raw request and response with secrets redacted), a crash report and `:http --doctor`.
 
 ## 5. Releases and distribution
 
@@ -46,4 +46,4 @@ Snapshot from 2026-11-18 (v0.2.0 plus unreleased changes, classifier "Alpha"). T
 
 ## Shared with the family
 
-The pitch palette is copied into each repo, and the release, installer, logging and `--doctor` work is the same across all of them. Solve it once in ember and port it here.
+The pitch palette is copied into each repo, and the release, installer, logging and `--doctor` work is the same across all of them. Solve it once in :py and port it here.

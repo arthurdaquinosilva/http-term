@@ -2,7 +2,7 @@ import json
 
 from conftest import output
 
-from flare.session import Session
+from http_term.session import Session
 
 
 def test_request_is_sent_and_shown(session):

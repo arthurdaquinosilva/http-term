@@ -4,16 +4,12 @@ from __future__ import annotations
 
 from rich.text import Text
 
-# 7-row bitmap glyphs, lowercase with ascenders. Rendered with ▀ ▄ █, every terminal cell holds
-# two square-ish pixels.
+# 5×7 bitmap glyphs. Rendered with ▀ ▄ █, every terminal cell holds two square-ish pixels.
 GLYPHS: dict[str, tuple[str, ...]] = {
-    ":": ("..", "..", "##", "##", "..", "##", "##"),
-    "/": ("...#", "...#", "..#.", "..#.", ".#..", ".#..", "#..."),
-    "f": ("..##", ".#..", "####", ".#..", ".#..", ".#..", ".#.."),
-    "l": ("##.", ".#.", ".#.", ".#.", ".#.", ".#.", "###"),
-    "a": (".....", ".....", ".###.", "....#", ".####", "#...#", ".####"),
-    "r": (".....", ".....", "#.##.", "##..#", "#....", "#....", "#...."),
-    "e": (".....", ".....", ".###.", "#...#", "#####", "#....", ".####"),
+    ":": ("...", ".##", ".##", "...", "...", ".##", ".##"),
+    "H": ("#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
+    "T": ("#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."),
+    "P": ("####.", "#...#", "#...#", "####.", "#....", "#....", "#...."),
 }
 _HALF = {(True, True): "█", (True, False): "▀", (False, True): "▄", (False, False): " "}
 
@@ -38,5 +34,5 @@ def pixel_rows(word: str, spacing: int = 1) -> list[str]:
     return lines
 
 
-def wordmark(word: str = "://flare", indent: int = 2) -> list[Text]:
-    return [Text(" " * indent) + Text(row, style="flare.logo") for row in pixel_rows(word)]
+def wordmark(word: str = ":HTTP", indent: int = 2) -> list[Text]:
+    return [Text(" " * indent) + Text(row, style="http_term.logo") for row in pixel_rows(word)]
